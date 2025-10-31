@@ -2,7 +2,7 @@
 
 return [
     'paths' => ['api/*'],
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['POST', 'OPTIONS'],
     'allowed_origins' => explode(',', env('CORS_ALLOWED_ORIGINS', '*')),
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],

@@ -168,5 +168,10 @@
                 </div>
             </div>
         </div>
+        <script
+        src="{{ asset('tracker.min.js') }}"
+        data-api="{{ url('/api/track') }}"
+        defer>
+        </script>
     </body>
 </html>
