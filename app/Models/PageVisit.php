@@ -10,7 +10,7 @@ class PageVisit extends Model
     protected $fillable = [
         'visitor_id','page_id','full_url','referrer',
         'utm_source','utm_medium','utm_campaign','utm_term','utm_content',
-        'ip','user_agent','visited_at','visit_date'
+        'ip','ip_trunc', 'ip_hash', 'user_agent','visited_at','visit_date'
     ];
 
     protected $casts = [

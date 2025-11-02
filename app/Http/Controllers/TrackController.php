@@ -6,20 +6,32 @@ use App\Http\Requests\TrackVisitRequest;
 use App\Models\Page;
 use App\Models\PageVisit;
 use App\Models\Visitor;
+use App\Support\IpTools;
 use App\Support\UrlTools;
 use App\Support\UaTools;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TrackController extends Controller
 {
     public function store(TrackVisitRequest $request)
     {
-        $ip = $request->ip();
-        $ua = $request->input('ua', $request->userAgent());
         $url = $request->input('url');
+        $parsed = parse_url($url);
+        $host = $parsed['host'] ?? null;
+        $allowed = config('tracker.allowed_hosts');
+        if ($host && $allowed !== ['*'] && !in_array($host, $allowed, true)) {
+            return response()->json(['ok'=>true,'skipped'=>'host_not_allowed'], 200);
+        }
+
+        $rawIp = $request->ip();
+        $ipTrunc = IpTools::truncate($rawIp);
+        $ipHash  = config('tracker.hash_ip') ? IpTools::hash($rawIp, config('tracker.ip_hash_pepper')) : null;
+
+        $ua = $request->input('ua', $request->userAgent());
         $ref = $request->input('referrer');
         $vkey = $request->input('visitorKey');
 
@@ -69,25 +81,22 @@ class TrackController extends Controller
         $page = Page::firstOrCreate(['canonical_url' => $canonical]);
 
         // Enforce uniqueness (visitor+page+day) with DB unique index.
-        // We try insert; if duplicate, ignore.
-        try {
-            PageVisit::create([
-                'visitor_id'  => $visitor->id,
-                'page_id'     => $page->id,
-                'full_url'    => $url,
-                'referrer'    => $ref,
-                'utm_source'   => $utm['utm_source']   ?? null,
-                'utm_medium'   => $utm['utm_medium']   ?? null,
-                'utm_campaign' => $utm['utm_campaign'] ?? null,
-                'utm_term'     => $utm['utm_term']     ?? null,
-                'utm_content'  => $utm['utm_content']  ?? null,
-                'ip'          => $ip,
-                'user_agent'  => $ua,
-                'visited_at'  => $visitedAt,
-            ]);
-        } catch (QueryException $e) {
-            // Duplicate (unique) — swallow
-        }
+        DB::table('page_visits')->insertOrIgnore([[
+            'visitor_id'  => $visitor->id,
+            'page_id'     => $page->id,
+            'full_url'    => $url,
+            'referrer'    => $ref,
+            'utm_source'   => $utm['utm_source']   ?? null,
+            'utm_medium'   => $utm['utm_medium']   ?? null,
+            'utm_campaign' => $utm['utm_campaign'] ?? null,
+            'utm_term'     => $utm['utm_term']     ?? null,
+            'utm_content'  => $utm['utm_content']  ?? null,
+            'ip'          => config('tracker.store_raw_ip') ? $rawIp : null,
+            'ip_trunc'    => $ipTrunc,
+            'ip_hash'     => $ipHash,
+            'user_agent'  => $ua,
+            'visited_at'  => $visitedAt,
+        ]]);
 
         return response()->json([
             'ok' => true,
