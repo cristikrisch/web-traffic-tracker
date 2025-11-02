@@ -19,17 +19,4 @@ class UrlTools
 
         return "{$scheme}://{$host}{$path}";
     }
-
-    public static function extractUtm(?string $url): array
-    {
-        $qs = parse_url($url, PHP_URL_QUERY);
-        parse_str($qs ?? '', $params);
-        return [
-            'utm_source'   => $params['utm_source']   ?? null,
-            'utm_medium'   => $params['utm_medium']   ?? null,
-            'utm_campaign' => $params['utm_campaign'] ?? null,
-            'utm_term'     => $params['utm_term']     ?? null,
-            'utm_content'  => $params['utm_content']  ?? null,
-        ];
-    }
 }

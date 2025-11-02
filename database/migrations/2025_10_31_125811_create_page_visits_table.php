@@ -23,12 +23,6 @@ return new class extends Migration
             $table->string('full_url', 2048);
             $table->string('referrer', 2048)->nullable();
 
-            $table->string('utm_source', 64)->nullable()->index();
-            $table->string('utm_medium', 64)->nullable()->index();
-            $table->string('utm_campaign', 128)->nullable()->index();
-            $table->string('utm_term', 128)->nullable()->index();
-            $table->string('utm_content', 128)->nullable()->index();
-
             $table->string('ip', 45)->nullable()->index();
             $table->text('user_agent')->nullable();
 

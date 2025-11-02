@@ -4,14 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TrackVisitRequest;
 use App\Models\Page;
-use App\Models\PageVisit;
 use App\Models\Visitor;
 use App\Support\IpTools;
 use App\Support\UrlTools;
 use App\Support\UaTools;
 use Carbon\Carbon;
-use Illuminate\Database\QueryException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -37,13 +34,6 @@ class TrackController extends Controller
 
         // Normalize URL & UTM
         $canonical = UrlTools::canonical($url);
-        $utm = array_filter(array_merge(UrlTools::extractUtm($url), [
-            'utm_source'   => data_get($request, 'utm.source'),
-            'utm_medium'   => data_get($request, 'utm.medium'),
-            'utm_campaign' => data_get($request, 'utm.campaign'),
-            'utm_term'     => data_get($request, 'utm.term'),
-            'utm_content'  => data_get($request, 'utm.content'),
-        ]));
 
         // Server-side visited time (bounded by now)
         $clientMs = (int) $request->input('ts');
@@ -86,11 +76,6 @@ class TrackController extends Controller
             'page_id'     => $page->id,
             'full_url'    => $url,
             'referrer'    => $ref,
-            'utm_source'   => $utm['utm_source']   ?? null,
-            'utm_medium'   => $utm['utm_medium']   ?? null,
-            'utm_campaign' => $utm['utm_campaign'] ?? null,
-            'utm_term'     => $utm['utm_term']     ?? null,
-            'utm_content'  => $utm['utm_content']  ?? null,
             'ip'          => config('tracker.store_raw_ip') ? $rawIp : null,
             'ip_trunc'    => $ipTrunc,
             'ip_hash'     => $ipHash,
