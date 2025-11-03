@@ -41,7 +41,7 @@ class TrackVisitTest extends TestCase
             'ua'         => 'Mozilla',
         ];
 
-        $this->postJson('/api/track', $payload)->assertOk();
+        $this->postJson('/api/track', $payload)->assertForbidden();
 
         $this->assertDatabaseCount('page_visits', 0);
     }

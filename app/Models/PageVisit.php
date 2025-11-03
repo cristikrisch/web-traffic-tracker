@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PageVisit extends Model
 {
-    use HasUlids;
     use HasFactory;
 
     protected $fillable = [

@@ -21,7 +21,10 @@ class MetricsTest extends TestCase
         PageVisit::factory()->create([
             'page_id'    => $page->id,
             'visitor_id' => $visitor->id,
+            'full_url' => 'https://example.com/blog/hello?source=test',
             'visited_at' => now('UTC'),
+            'created_at' => now('UTC'),
+            'updated_at' => now('UTC'),
         ]);
 
         // Yesterday
@@ -30,6 +33,8 @@ class MetricsTest extends TestCase
             'visitor_id' => $visitor->id,
             'full_url' => 'https://example.com/blog/hello?source=test',
             'visited_at' => now('UTC')->subDay(),
+            'created_at' => now('UTC'),
+            'updated_at' => now('UTC'),
         ]);
 
         $from = now('UTC')->subDays(1)->toDateString();
@@ -60,6 +65,8 @@ class MetricsTest extends TestCase
             'visitor_id' => $visitorA->id,
             'full_url' => 'https://example.com/blog/hello?source=test1',
             'visited_at' => now('UTC'),
+            'created_at' => now('UTC'),
+            'updated_at' => now('UTC'),
         ]);
 
         // Visitor B visits page A
@@ -68,6 +75,8 @@ class MetricsTest extends TestCase
             'visitor_id' => $visitorB->id,
             'full_url' => 'https://example.com/blog/hello?source=test2',
             'visited_at' => now('UTC'),
+            'created_at' => now('UTC'),
+            'updated_at' => now('UTC'),
         ]);
 
         // Visitor A visits page B
@@ -76,6 +85,8 @@ class MetricsTest extends TestCase
             'visitor_id' => $visitorA->id,
             'full_url' => 'https://example.com/blog/hello?source=test3',
             'visited_at' => now('UTC'),
+            'created_at' => now('UTC'),
+            'updated_at' => now('UTC'),
         ]);
 
         $from = now('UTC')->toDateString();
