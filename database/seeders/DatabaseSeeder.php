@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // 10 unique pages and 30 unique visitors
         Page::factory()->count(10)->create();
         Visitor::factory()->count(30)->create();
 

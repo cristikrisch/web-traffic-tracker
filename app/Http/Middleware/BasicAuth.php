@@ -11,8 +11,9 @@ class BasicAuth
         $user = env('ADMIN_USER');
         $pass = env('ADMIN_PASS');
 
+        // No auth if env not set
         if (!$user || !$pass) {
-            return $next($request); // no auth if not set
+            return $next($request);
         }
 
         if (

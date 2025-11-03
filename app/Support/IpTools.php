@@ -3,12 +3,14 @@
 namespace App\Support;
 
 class IpTools {
+
     public static function truncate(?string $ip): ?string {
         if (!$ip) return null;
 
-        // zero the last part
+        // Zero the last part
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-            $parts = explode('.', $ip); $parts[3] = '0';
+            $parts = explode('.', $ip);
+            $parts[3] = '0';
             return implode('.', $parts);
         }
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
@@ -16,6 +18,7 @@ class IpTools {
         }
         return null;
     }
+
     public static function hash(?string $ip, ?string $pepper): ?string {
         return ($ip && $pepper) ? hash_hmac('sha256', $ip, $pepper) : null;
     }

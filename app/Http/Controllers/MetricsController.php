@@ -30,7 +30,7 @@ class MetricsController extends Controller
             return response()->json($rows);
         }
 
-        // If no page filter → return per-day per-page
+        // If no page filter return per-day per-page
         $rows = (clone $base)
             ->selectRaw('pages.canonical_url, page_visits.visit_date as date, COUNT(DISTINCT page_visits.visitor_id) AS uniques')
             ->groupBy('pages.canonical_url', 'date')

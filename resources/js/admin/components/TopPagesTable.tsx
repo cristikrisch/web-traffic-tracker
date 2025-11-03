@@ -1,8 +1,13 @@
 import React from 'react';
+
 export default function TopPagesTable({ rows }: { rows: { canonical_url: string; date: string; uniques: number }[] }) {
+
     const totals = new Map<string, number>();
+
     rows.forEach(r => totals.set(r.canonical_url, (totals.get(r.canonical_url) || 0) + r.uniques));
+
     const sorted = Array.from(totals.entries()).sort((a,b) => b[1]-a[1]).slice(0, 20);
+
     return (
         <div style={{ background:'white', border:'1px solid #eee', borderRadius:8, padding:12 }}>
             <h3 style={{ marginTop:0 }}>Top pages (by uniques)</h3>

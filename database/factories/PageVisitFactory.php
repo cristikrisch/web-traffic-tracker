@@ -7,7 +7,9 @@ use App\Models\Visitor;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PageVisitFactory extends Factory {
+
     protected $model = PageVisit::class;
+
     public function definition(): array
     {
         return [

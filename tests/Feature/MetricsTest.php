@@ -17,14 +17,14 @@ class MetricsTest extends TestCase
         $page = Page::factory()->create();
         $visitor = Visitor::factory()->create();
 
-        // today
+        // Today
         PageVisit::factory()->create([
             'page_id'    => $page->id,
             'visitor_id' => $visitor->id,
             'visited_at' => now('UTC'),
         ]);
 
-        // yesterday
+        // Yesterday
         PageVisit::factory()->create([
             'page_id'    => $page->id,
             'visitor_id' => $visitor->id,
@@ -50,9 +50,11 @@ class MetricsTest extends TestCase
     {
         $pageA = Page::factory()->create();
         $pageB = Page::factory()->create();
+
         $visitorA = Visitor::factory()->create();
         $visitorB = Visitor::factory()->create();
 
+        // Visitor A visits page A
         PageVisit::factory()->create([
             'page_id' => $pageA->id,
             'visitor_id' => $visitorA->id,
@@ -60,6 +62,7 @@ class MetricsTest extends TestCase
             'visited_at' => now('UTC'),
         ]);
 
+        // Visitor B visits page A
         PageVisit::factory()->create([
             'page_id' => $pageA->id,
             'visitor_id' => $visitorB->id,
@@ -67,6 +70,7 @@ class MetricsTest extends TestCase
             'visited_at' => now('UTC'),
         ]);
 
+        // Visitor A visits page B
         PageVisit::factory()->create([
             'page_id' => $pageB->id,
             'visitor_id' => $visitorA->id,
@@ -80,13 +84,13 @@ class MetricsTest extends TestCase
         $res = $this->getJson("/api/metrics/unique-visits?from={$from}&to={$to}")
             ->assertOk()
             ->json();
-        dump($res);
+
         // Expect one day bucket aggregated across pages
         $this->assertIsArray($res);
         $this->assertGreaterThanOrEqual(1, count($res));
         $this->assertArrayHasKey('date', $res[0]);
         $this->assertArrayHasKey('uniques', $res[0]);
-        $this->assertGreaterThanOrEqual(2, $res[1]['uniques']); // at least 2 uniques (two pages same visitor counted per page)
+        $this->assertGreaterThanOrEqual(2, $res[1]['uniques']); // at least 2 uniques (two pages for visitor A)
     }
 
 }

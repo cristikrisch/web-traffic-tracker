@@ -24,9 +24,9 @@ class AppServiceProvider extends ServiceProvider
     {
         RateLimiter::for('tracking', function (Request $request) {
             return [
-                // per IP cap
+                // Per IP cap
                 Limit::perMinute(240)->by($request->ip()),
-                // per (optional) visitor key header cap
+                // Per visitor key header cap
                 Limit::perMinute(60)->by($request->header('x-vkey', $request->ip())),
             ];
         });

@@ -7,6 +7,7 @@ use App\Http\Controllers\TrackController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\MetricsController;
 
+// Tracking endpoint behind throttle protection
 Route::middleware('throttle:tracking')->group(function () {
     Route::post('/track', [TrackController::class, 'store']);
 });
@@ -14,6 +15,7 @@ Route::middleware('throttle:tracking')->group(function () {
 Route::get('/pages', [PagesController::class, 'index']);
 Route::get('/metrics/unique-visits', [MetricsController::class, 'uniqueVisits']);
 
+// Protect DSAR endpoints under basic auth
 Route::middleware('admin.basic')->group(function () {
     Route::delete('/visitor/{key}', function(string $key) {
         $v = Visitor::where('visitor_key',$key)->first();

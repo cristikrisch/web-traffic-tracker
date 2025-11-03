@@ -10,7 +10,6 @@ use App\Support\UrlTools;
 use App\Support\UaTools;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class TrackController extends Controller
 {
@@ -19,12 +18,15 @@ class TrackController extends Controller
         $url = $request->input('url');
         $parsed = parse_url($url);
         $host = $parsed['host'] ?? null;
+
+        // Check allowed hosts first
         $allowed = config('tracker.allowed_hosts');
         if ($host && $allowed !== ['*'] && !in_array($host, $allowed, true)) {
-            return response()->json(['ok'=>true,'skipped'=>'host_not_allowed'], 200);
+            return response()->json(['ok'=>false,'skipped'=>'host_not_allowed'], 403);
         }
 
         $rawIp = $request->ip();
+        // Truncate and Hash the IP for PII compliance
         $ipTrunc = IpTools::truncate($rawIp);
         $ipHash  = config('tracker.hash_ip') ? IpTools::hash($rawIp, config('tracker.ip_hash_pepper')) : null;
 
@@ -32,7 +34,7 @@ class TrackController extends Controller
         $ref = $request->input('referrer');
         $vkey = $request->input('visitorKey');
 
-        // Normalize URL & UTM
+        // Normalize URL
         $canonical = UrlTools::canonical($url);
 
         // Server-side visited time (bounded by now)
@@ -40,7 +42,7 @@ class TrackController extends Controller
         $visitedAt = now();
         if ($clientMs > 0) {
             $candidate = Carbon::createFromTimestampMsUTC($clientMs);
-            // clamp to a reasonable window (±1 day)
+            // Clamp to a reasonable window (±1 day)
             if ($candidate->between(now()->subDay(), now()->addDay())) {
                 $visitedAt = $candidate;
             }
@@ -81,11 +83,13 @@ class TrackController extends Controller
             'ip_hash'     => $ipHash,
             'user_agent'  => $ua,
             'visited_at'  => $visitedAt,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]]);
 
         return response()->json([
             'ok' => true,
             'visitorKey' => $visitor->visitor_key,
-        ]);
+        ], 200);
     }
 }

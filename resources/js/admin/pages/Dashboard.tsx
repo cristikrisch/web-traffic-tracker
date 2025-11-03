@@ -1,16 +1,16 @@
 import React from 'react';
 import { useMemo, useState } from 'react';
-import { format } from 'date-fns';
 import { usePages } from '../hooks/usePages';
 import { useUniqueVisits } from '../hooks/useUniqueVisits';
-import { fmt, today, sevenDaysAgo } from '../lib/date';
+import { fmt, today, twoDaysAgo } from '../lib/date';
 import DateRangePicker from '../components/DateRangePicker';
 import PageSelect from '../components/PageSelect';
 import UniqueVisitsChart from '../components/UniqueVisitsChart';
 import TopPagesTable from '../components/TopPagesTable';
 
 export default function Dashboard() {
-    const [from, setFrom] = useState<Date>(sevenDaysAgo);
+
+    const [from, setFrom] = useState<Date>(twoDaysAgo);
     const [to, setTo] = useState<Date>(today);
     const [page, setPage] = useState<string | undefined>(undefined);
 
@@ -18,10 +18,14 @@ export default function Dashboard() {
     const { data, isLoading, error } = useUniqueVisits({ from: fmt(from), to: fmt(to), page });
 
     const chartData = useMemo(() => {
-        if (!data) return [];
-        if (page) return (data as any[]).map(d => ({ date: d.date, uniques: d.uniques }));
+        if (!data)
+            return [];
+        if (page)
+            return (data as any[]).map(d => ({ date: d.date, uniques: d.uniques }));
+
         const map = new Map<string, number>();
         (data as any[]).forEach(d => map.set(d.date, (map.get(d.date) || 0) + d.uniques));
+
         return Array.from(map.entries()).sort((a,b)=>a[0].localeCompare(b[0])).map(([date, uniques]) => ({ date, uniques }));
     }, [data, page]);
 
@@ -42,7 +46,9 @@ export default function Dashboard() {
             </div>
 
             {isLoading && <div>Loading metrics…</div>}
+
             {error && <div style={{ color:'crimson' }}>Failed to load metrics.</div>}
+
             {!isLoading && !error && (
                 <>
                     <UniqueVisitsChart data={chartData} />

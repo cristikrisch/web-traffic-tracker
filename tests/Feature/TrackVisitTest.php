@@ -20,9 +20,9 @@ class TrackVisitTest extends TestCase
         ];
 
         $this->postJson('/api/track', $payload)->assertOk();
-        $this->postJson('/api/track', $payload)->assertOk(); // duplicate same day
+        $this->postJson('/api/track', $payload)->assertOk(); // Duplicate same day
 
-        $this->assertDatabaseCount('page_visits', 1);
+        $this->assertDatabaseCount('page_visits', 1); // Page visits should count just one
 
         $visit = PageVisit::first();
         $this->assertNotNull($visit);
@@ -32,7 +32,7 @@ class TrackVisitTest extends TestCase
 
     public function test_host_allow_list_blocks_unknown_sites(): void
     {
-        // Only allow your-site.com
+        // Only allow known hosts
         config()->set('tracker.allowed_hosts', ['tracker-api.test']);
 
         $payload = [
@@ -66,7 +66,7 @@ class TrackVisitTest extends TestCase
         /** @var PageVisit $visit */
         $visit = PageVisit::first();
         $this->assertNotNull($visit);
-        $this->assertNull($visit->ip); // raw IP not stored
+        $this->assertNull($visit->ip); // Raw IP should not stored and hashed and truncated fields should populate
         $this->assertSame('203.0.113.0', $visit->ip_trunc);
         $this->assertNotNull($visit->ip_hash);
         $this->assertSame(64, strlen($visit->ip_hash));

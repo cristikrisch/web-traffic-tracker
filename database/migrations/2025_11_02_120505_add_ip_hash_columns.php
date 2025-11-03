@@ -15,7 +15,7 @@ return new class extends Migration
             // Truncated IP for coarse-grained geo or dedupe
             $table->string('ip_trunc', 45)->nullable()->after('ip')->index();
 
-            // Hashed IP for uniqueness/returning visitor detection
+            // Hashed IP for uniqueness
             $table->char('ip_hash', 64)->nullable()->after('ip_trunc')->index();
         });
     }

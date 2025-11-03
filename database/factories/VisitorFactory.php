@@ -5,7 +5,9 @@ use App\Models\Visitor;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class VisitorFactory extends Factory {
+
     protected $model = Visitor::class;
+
     public function definition(): array
     {
         return ['visitor_key' => 'v_'.$this->faker->unique()->sha1()];

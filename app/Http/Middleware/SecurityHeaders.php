@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Http\Middleware;
-use Closure; use Illuminate\Http\Request;
+
+use Closure;
+use Illuminate\Http\Request;
 
 class SecurityHeaders {
 

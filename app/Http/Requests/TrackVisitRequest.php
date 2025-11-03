@@ -28,12 +28,6 @@ class TrackVisitRequest extends FormRequest
             'referrer'   => ['nullable','url','max:2048'],
             'ua'         => ['nullable','string','max:2000'],
             'ts'         => ['nullable','integer','min:0'],
-            'utm'        => ['nullable','array'],
-            'utm.source'   => ['nullable','string','max:64'],
-            'utm.medium'   => ['nullable','string','max:64'],
-            'utm.campaign' => ['nullable','string','max:128'],
-            'utm.term'     => ['nullable','string','max:128'],
-            'utm.content'  => ['nullable','string','max:128'],
         ];
     }
 }
